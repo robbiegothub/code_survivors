@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://dby5oyayepkjy"]
+
+[ext_resource type="Script" uid="uid://cei5fqm8m12gg" path="res://Scripts/level_up_screen.gd" id="1_5eus0"]
+
+[node name="LevelUpScreen" type="CanvasLayer" unique_id=1977707822]
+script = ExtResource("1_5eus0")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=439966655]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Panel" type="Control" parent="." unique_id=952662500]
+custom_minimum_size = Vector2(500, 300)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -826.0
+offset_top = -474.0
+offset_right = -326.0
+offset_bottom = -174.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel" unique_id=864473383]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Panel/Content" unique_id=363322070]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.99330014, 0.28586245, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "Level Up!
+"
+
+[node name="Choices" type="HBoxContainer" parent="Panel/Content" unique_id=1692731917]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16

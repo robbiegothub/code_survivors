@@ -1,0 +1,30 @@
+# Godot 4-specific ignores
+.godot/
+.import/
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+mono_crash.*.json
+
+# System/IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Export builds — keep these out of git
+builds/
+exports/
+*.exe
+*.pck
+*.zip
+
+# Godot editor backup files
+*.tres~
+*.tscn~

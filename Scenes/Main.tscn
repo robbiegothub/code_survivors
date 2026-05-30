@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://cjpojmcaa40ro"]
+
+[ext_resource type="Texture2D" uid="uid://bn5qn2bka2wnh" path="res://Assets/sprites/Background/Tiles/tile_0001.png" id="1_idj7w"]
+[ext_resource type="Script" uid="uid://bnhj4godbg8fp" path="res://Scenes/main.gd" id="1_jw32o"]
+[ext_resource type="PackedScene" uid="uid://bclo2ca4gchte" path="res://Scenes/player.tscn" id="2_kln2b"]
+[ext_resource type="PackedScene" uid="uid://cp551pyanw3gn" path="res://Scenes/hud.tscn" id="3_kln2b"]
+[ext_resource type="Script" uid="uid://dev0dq2kca0bx" path="res://Scripts/spawner.gd" id="4_rgh2o"]
+[ext_resource type="PackedScene" uid="uid://6lwpby1y400k" path="res://Scenes/enemy.tscn" id="5_pbw6q"]
+[ext_resource type="PackedScene" uid="uid://dby5oyayepkjy" path="res://Scenes/LevelUpScreen.tscn" id="7_50glp"]
+[ext_resource type="PackedScene" uid="uid://bdt5oco5q2wbb" path="res://Scenes/pause_menu.tscn" id="8_50glp"]
+
+[node name="MainScene" type="Node2D" unique_id=1957162124]
+script = ExtResource("1_jw32o")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1536799007]
+texture_repeat = 2
+scale = Vector2(3, 3)
+texture = ExtResource("1_idj7w")
+region_enabled = true
+region_rect = Rect2(-2000, -2000, 4000, 4000)
+
+[node name="Player" parent="." unique_id=1791252745 instance=ExtResource("2_kln2b")]
+
+[node name="Hud" parent="." unique_id=2120830592 instance=ExtResource("3_kln2b")]
+
+[node name="Enemies" type="Node2D" parent="." unique_id=53576570]
+
+[node name="Spawner" type="Node" parent="." unique_id=1648936060]
+script = ExtResource("4_rgh2o")
+enemy_scene = ExtResource("5_pbw6q")
+
+[node name="Projectiles" type="Node2D" parent="." unique_id=82138303]
+
+[node name="LevelUpScreen" parent="." unique_id=1977707822 instance=ExtResource("7_50glp")]
+visible = false
+
+[node name="PauseMenu" parent="." unique_id=1523814748 instance=ExtResource("8_50glp")]

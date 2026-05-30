@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://bdt5oco5q2wbb"]
+
+[ext_resource type="Script" uid="uid://ci1dv7t0o1wln" path="res://Scripts/pause_menu.gd" id="1_emv3i"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1523814748]
+script = ExtResource("1_emv3i")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2107479015]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Buttons" type="VBoxContainer" parent="." unique_id=1792551799]
+custom_minimum_size = Vector2(200, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -676.0
+offset_top = -224.0
+offset_right = -476.0
+offset_bottom = -184.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Buttons" unique_id=395754111]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Paused!"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Buttons" unique_id=1428976035]
+layout_mode = 2
+text = "Resume Game :)"
+
+[node name="MenuButton" type="Button" parent="Buttons" unique_id=1370820580]
+layout_mode = 2
+text = "Main Menu :l"
+
+[node name="QuitButton" type="Button" parent="Buttons" unique_id=469620608]
+layout_mode = 2
+text = "Quit Game :("

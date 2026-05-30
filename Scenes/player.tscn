@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bclo2ca4gchte"]
+
+[ext_resource type="Script" uid="uid://bcgvvaat4xnit" path="res://Scripts/Player.gd" id="1_4flbx"]
+[ext_resource type="Texture2D" uid="uid://cxs11ogm2ajr" path="res://Assets/sprites/Characters/Tiles/tile_0097.png" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://b8a5a3b0ykj4l" path="res://Scripts/weapon_controller.gd" id="3_6t5aa"]
+[ext_resource type="PackedScene" uid="uid://bide8o43rf2co" path="res://Scenes/Projectile.tscn" id="4_vgqql"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4flbx"]
+size = Vector2(27, 31)
+
+[node name="Player" type="CharacterBody2D" unique_id=1791252745 groups=["player"]]
+scale = Vector2(2, 2)
+collision_mask = 26
+script = ExtResource("1_4flbx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1221412856]
+scale = Vector2(2, 2)
+texture = ExtResource("2_onrkg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=546143154]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_4flbx")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1689912446]
+
+[node name="WeaponController" type="Node" parent="." unique_id=1242876922]
+script = ExtResource("3_6t5aa")
+projectile_scene = ExtResource("4_vgqql")

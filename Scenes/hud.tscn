@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://cp551pyanw3gn"]
+
+[ext_resource type="Script" uid="uid://2gdm06suialu" path="res://Scripts/hud.gd" id="1_e0onf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3gfia"]
+bg_color = Color(0.29756066, 0.6913483, 0.4599529, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0onf"]
+bg_color = Color(0.8902147, 0.40683115, 0.64730406, 1)
+
+[node name="Hud" type="CanvasLayer" unique_id=2120830592]
+
+[node name="HUD" type="Control" parent="." unique_id=992762217]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e0onf")
+
+[node name="BarsContainer" type="VBoxContainer" parent="HUD" unique_id=1048909632]
+custom_minimum_size = Vector2(120, 32)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -61.0
+offset_top = 525.0
+offset_right = 59.0
+offset_bottom = 589.0
+grow_horizontal = 2
+scale = Vector2(1, 0.8)
+theme_override_constants/separation = 4
+
+[node name="LevelLabel" type="Label" parent="HUD/BarsContainer" unique_id=913310839]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/BarsContainer" unique_id=855304216]
+custom_minimum_size = Vector2(50, 12)
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_3gfia")
+value = 100.0
+
+[node name="XPBar" type="ProgressBar" parent="HUD/BarsContainer" unique_id=957811089]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_e0onf")
+max_value = 10.0
+show_percentage = false
+
+[node name="KillCounter" type="Label" parent="HUD" unique_id=135177968]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -50.0
+offset_bottom = 23.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 30
+text = "Kills: 0"
+horizontal_alignment = 2
