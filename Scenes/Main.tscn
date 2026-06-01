@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://6lwpby1y400k" path="res://Scenes/enemy.tscn" id="5_pbw6q"]
 [ext_resource type="PackedScene" uid="uid://dby5oyayepkjy" path="res://Scenes/LevelUpScreen.tscn" id="7_50glp"]
 [ext_resource type="PackedScene" uid="uid://bdt5oco5q2wbb" path="res://Scenes/pause_menu.tscn" id="8_50glp"]
+[ext_resource type="PackedScene" uid="uid://cblkedt7x2yqn" path="res://Scenes/BlockEditor.tscn" id="9_blked"]
 
 [node name="MainScene" type="Node2D" unique_id=1957162124]
 script = ExtResource("1_jw32o")
@@ -32,6 +33,9 @@ enemy_scene = ExtResource("5_pbw6q")
 [node name="Projectiles" type="Node2D" parent="." unique_id=82138303]
 
 [node name="LevelUpScreen" parent="." unique_id=1977707822 instance=ExtResource("7_50glp")]
+visible = false
+
+[node name="BlockEditor" parent="." unique_id=719026271 instance=ExtResource("9_blked")]
 visible = false
 
 [node name="PauseMenu" parent="." unique_id=1523814748 instance=ExtResource("8_50glp")]
