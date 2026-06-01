@@ -4,6 +4,8 @@ signal health_changed(current: int, max: int)
 signal xp_changed(current: int, needed: int)
 signal leveled_up(new_level: int)
 signal kills_changed(total: int)
+signal enemy_killed       # fired when the player gets a kill (drives on_kill hats)
+signal took_damage        # fired when the player actually loses HP (drives on_take_damage hats)
 
 
 @export var speed: float = 300.0
@@ -20,6 +22,12 @@ var kill_count: int = 0
 
 @export var health_regen_percent_per_sec: float = 2.0  # 2% of max HP per second
 
+# Overheal: heal_self can push health above max_health as a temporary buffer that
+# decays back down. Capped so repeated healing can't snowball into invincibility.
+@export var overheal_cap_multiplier: float = 2.0          # max overheal = max_health * this
+@export var overheal_decay_percent_per_sec: float = 5.0   # % of max HP lost per second while above max
+var _overheal_accumulator: float = 0.0
+
 
 
 
@@ -28,6 +36,7 @@ var kill_count: int = 0
 func register_kill() -> void:
 	kill_count += 1
 	kills_changed.emit(kill_count)
+	enemy_killed.emit()
 
 
 func _ready() -> void:
@@ -48,17 +57,28 @@ func _physics_process(delta: float) -> void:
 	
 	velocity = input_vector * speed
 	move_and_slide()
-	
+
 	_process_regen(delta)
+	_process_overheal(delta)
 
 func take_damage(amount: int) -> void:
-	current_health = max(0, current_health - amount)
+	if amount <= 0:
+		return
+	current_health = maxi(0, current_health - amount)
 	health_changed.emit(current_health, max_health)
-	if current_health == 0:
+	# Run on_take_damage hats now; an emergency heal can still save us this frame.
+	took_damage.emit()
+	if current_health <= 0:
 		die()
 
 func heal(amount: int) -> void:
-	current_health = min(max_health, current_health + amount)
+	current_health = mini(max_health, current_health + amount)
+	health_changed.emit(current_health, max_health)
+
+# Heal that can exceed max_health (temporary buffer), up to the overheal cap.
+func add_overheal(amount: int) -> void:
+	var cap := int(max_health * overheal_cap_multiplier)
+	current_health = mini(cap, current_health + amount)
 	health_changed.emit(current_health, max_health)
 
 func gain_xp(amount: int) -> void:
@@ -105,3 +125,18 @@ func _process_regen(delta: float) -> void:
 		var whole_hp := int(_regen_accumulator)
 		_regen_accumulator -= whole_hp
 		heal(whole_hp)
+
+func _process_overheal(delta: float) -> void:
+	# Bleed any health above max_health back down over time.
+	if current_health <= max_health:
+		_overheal_accumulator = 0.0
+		return
+
+	var loss_per_sec := max_health * (overheal_decay_percent_per_sec / 100.0)
+	_overheal_accumulator += loss_per_sec * delta
+
+	if _overheal_accumulator >= 1.0:
+		var whole_hp := int(_overheal_accumulator)
+		_overheal_accumulator -= whole_hp
+		current_health = maxi(max_health, current_health - whole_hp)
+		health_changed.emit(current_health, max_health)

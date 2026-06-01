@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cblkedt7x2yqn"]
+
+[ext_resource type="Script" path="res://Scripts/block_editor.gd" id="1_blked"]
+
+[node name="BlockEditor" type="CanvasLayer"]
+script = ExtResource("1_blked")
