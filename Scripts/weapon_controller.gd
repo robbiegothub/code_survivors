@@ -16,11 +16,17 @@ var _projectiles_container: Node2D
 var _program: WeaponProgram
 var _interpreter: BlockInterpreter
 
+const MAX_EVENTS_PER_TICK := 64  # cap so an on_kill -> AoE -> on_kill cascade can't hang the frame
+
 # Per-event scratch state, reset at the start of every event run.
 var _shot_index: int = 0      # projectiles fired this run; drives the spread fan
 var _damage_mult: float = 1.0  # boost_damage stacks into this
 var _pierce: int = 0           # pierce blocks set this; shots consume it
-var _in_event: bool = false    # guard against event cascades (e.g. on_kill -> kill -> on_kill)
+
+# Events are queued and drained sequentially so a kill caused mid-event still fires
+# On Kill, without re-entering the interpreter (which would corrupt the in-flight run).
+var _running: bool = false
+var _event_queue: Array[StringName] = []
 
 func _ready() -> void:
 	_player = get_parent()
@@ -48,25 +54,42 @@ func _process(delta: float) -> void:
 # The weapon's behavior lives in a WeaponProgram (a graph of blocks). Each game event
 # runs the chain hanging off that event's hat block.
 func execute() -> void:
-	trigger_event(&"on_fire_tick")
+	_enqueue_event(&"on_fire_tick")
 
 func _on_player_killed() -> void:
-	trigger_event(&"on_kill")
+	_enqueue_event(&"on_kill")
 
 func _on_player_took_damage() -> void:
-	trigger_event(&"on_take_damage")
+	_enqueue_event(&"on_take_damage")
+
+# Queue an event. If nothing is currently running, drain right away; otherwise the
+# in-flight drain loop will pick it up once the current event finishes.
+func _enqueue_event(event_type: StringName) -> void:
+	if _interpreter == null:
+		return
+	_event_queue.append(event_type)
+	if not _running:
+		_drain_events()
+
+func _drain_events() -> void:
+	_running = true
+	var processed := 0
+	while not _event_queue.is_empty():
+		processed += 1
+		if processed > MAX_EVENTS_PER_TICK:
+			_event_queue.clear()  # runaway cascade; drop the rest this frame
+			break
+		var event_type: StringName = _event_queue.pop_front()
+		_run_event(event_type)
+	_running = false
 
 # Run the program for one event. Resets per-run scratch state and the compute budget.
-func trigger_event(event_type: StringName) -> void:
-	if _interpreter == null or _in_event:
-		return
-	_in_event = true
+func _run_event(event_type: StringName) -> void:
 	_shot_index = 0
 	_damage_mult = 1.0
 	_pierce = 0
 	_interpreter.max_loop_depth = BlockCatalog.max_loop_depth()
 	_interpreter.run(event_type)
-	_in_event = false
 
 # The starting program, hand-built in code. It reproduces the original behavior:
 #   on_fire_tick -> shoot_toward( find_nearest_enemy )
