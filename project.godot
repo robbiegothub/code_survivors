@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 SceneManager="*uid://bvlgk2202ml7g"
-PowerupRegistry="*uid://c66vajae4xu3u"
 BlockCatalog="*res://Scripts/block_catalog.gd"
 
 [global_group]

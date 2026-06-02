@@ -201,13 +201,40 @@ func _build_specs() -> Dictionary:
 			],
 		},
 		&"if": {
-			"display_name": "If",
-			"description": "Runs the body only when the condition is true.",
+			"display_name": "If / Else",
+			"description": "Runs 'then' when the condition is true, otherwise 'else'.",
 			"category": &"control", "starter": false, "deletable": true,
 			"rows": [
 				{ "label": "exec          next", "left": exec_in, "right": exec_out },
 				{ "label": "cond", "left": { "name": &"cond", "kind": KIND_BOOL }, "right": {} },
 				{ "label": "then  ▶", "left": {}, "right": { "name": &"body", "kind": KIND_EXEC } },
+				{ "label": "else  ▶", "left": {}, "right": { "name": &"else", "kind": KIND_EXEC } },
+			],
+		},
+		&"while": {
+			"display_name": "While",
+			"description": "Repeats the body while the condition is true. Costs compute budget like a loop.",
+			"category": &"control", "starter": false, "deletable": true,
+			"rows": [
+				{ "label": "exec          next", "left": exec_in, "right": exec_out },
+				{ "label": "cond", "left": { "name": &"cond", "kind": KIND_BOOL }, "right": {} },
+				{ "label": "body  ▶", "left": {}, "right": { "name": &"body", "kind": KIND_EXEC } },
+			],
+		},
+		&"break": {
+			"display_name": "Break",
+			"description": "Exit the current loop immediately.",
+			"category": &"control", "starter": false, "deletable": true,
+			"rows": [
+				{ "label": "break", "left": exec_in, "right": {} },
+			],
+		},
+		&"return": {
+			"display_name": "Return",
+			"description": "Stop the whole program for this event (a guard clause).",
+			"category": &"control", "starter": false, "deletable": true,
+			"rows": [
+				{ "label": "return", "left": exec_in, "right": {} },
 			],
 		},
 

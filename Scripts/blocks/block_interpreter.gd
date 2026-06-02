@@ -9,6 +9,11 @@ class_name BlockInterpreter
 const MAX_STEPS := 2000      # total statements per tick; bounds loops/recursion so we never hang the frame
 const MAX_DATA_DEPTH := 64   # guard against a pathological data graph
 
+# Control-flow signal raised by break/return and consumed up the call stack.
+const FLOW_NONE := 0
+const FLOW_BREAK := 1   # exit the nearest enclosing loop
+const FLOW_RETURN := 2  # stop the whole event program
+
 # Big-O compute budget: the deepest a loop may nest before the budget is exceeded.
 # Set each tick from the player's complexity tier. 0 = O(1), loops don't run.
 var max_loop_depth: int = 99
@@ -18,6 +23,7 @@ var _wc: WeaponController
 var _steps := 0
 var _data_depth := 0
 var _loop_depth := 0
+var _flow := FLOW_NONE
 
 func _init(program: WeaponProgram, weapon_controller: WeaponController) -> void:
 	_program = program
@@ -33,15 +39,18 @@ func run(event_type: StringName = &"on_fire_tick") -> void:
 		return
 	_steps = 0
 	_loop_depth = 0
+	_flow = FLOW_NONE
 	_run_sequence(_program.get_exec_target(hat.id, &"next"))
 
-# Walk a chain of statements via their &"next" exec wires until it runs out.
-# Used for the top-level program and for each control-flow body.
+# Walk a chain of statements via their &"next" exec wires until it runs out, or until
+# a break/return interrupts the flow.
 func _run_sequence(start: BlockNode) -> void:
 	var current := start
 	while current != null and _steps < MAX_STEPS:
 		_steps += 1
 		_run_statement(current)
+		if _flow != FLOW_NONE:  # break/return interrupts this sequence
+			return
 		current = _program.get_exec_target(current.id, &"next")
 
 func _run_statement(node: BlockNode) -> void:
@@ -72,10 +81,38 @@ func _run_statement(node: BlockNode) -> void:
 					break
 				_steps += 1  # count the loop iteration itself, so empty bodies still cost budget
 				_run_sequence(body)
+				if _flow == FLOW_BREAK:
+					_flow = FLOW_NONE  # this loop consumes the break
+					break
+				if _flow == FLOW_RETURN:
+					break              # return keeps propagating up
+			_loop_depth -= 1
+		&"while":
+			if _loop_depth >= max_loop_depth:
+				return
+			var body := _program.get_exec_target(node.id, &"body")
+			_loop_depth += 1
+			while _resolve_bool(node, &"cond"):
+				if _steps >= MAX_STEPS:
+					break  # MAX_STEPS is the safety net against an infinite while
+				_steps += 1
+				_run_sequence(body)
+				if _flow == FLOW_BREAK:
+					_flow = FLOW_NONE
+					break
+				if _flow == FLOW_RETURN:
+					break
 			_loop_depth -= 1
 		&"if":
+			# 'then' when the condition holds, otherwise 'else' (either may be unwired).
 			if _resolve_bool(node, &"cond"):
 				_run_sequence(_program.get_exec_target(node.id, &"body"))
+			else:
+				_run_sequence(_program.get_exec_target(node.id, &"else"))
+		&"break":
+			_flow = FLOW_BREAK
+		&"return":
+			_flow = FLOW_RETURN
 		_:
 			push_warning("BlockInterpreter: unknown statement '%s'" % node.type)
 
